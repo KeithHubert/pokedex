@@ -1,18 +1,32 @@
-import { Button } from "@material-ui/core";
+import { useState, useEffect } from "react";
 import axios from 'axios'
-import { useState } from "react";
+import PokeTable from "./PokeTable";
 
-const DataFetcher = () => {
-  const [pokeData, setPokeData] = useState({})
+const PokeTableContainer = () => {
+  const [pokeData, setPokeData] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  // when pokeData changes, if data is longer than 0 data has loaded set loading to false
+  useEffect(() => {
+    pokeData.length > 0 && setLoading(false)
+  }, [pokeData]);
 
   // first get request, gets all pokemon data
   async function getData() {
+    setLoading(true)
     const result = await axios({
       method: 'get',
       url: 'https://pokeapi.co/api/v2/pokemon/?limit=151&offset=151',
     })
+    console.log('result', result)
     return mapWrapper(result.data.results)
   }
+
+  // Similar to componentDidMount and componentDidUpdate:
+  // when component mounts => get data
+  useEffect(() => {
+    getData()
+  }, []);
 
   // wrapper for the second part of the fetch to get information on a specific pokemon
   // required so that it waits until all requests are made before returning results
@@ -34,24 +48,18 @@ const DataFetcher = () => {
     return result.data
   }
 
-
-  const first10Values = pokeData.length > 0 
-    ? pokeData.slice(0, 1)
-    : pokeData
-
-//  const shortData = pokeData?.slice(0, 1) || {}
   return (
     <>
-      <Button variant='contained' onClick={() => getData()}>
-        Click to fetch
-      </Button>
-      {first10Values.length > 0 &&
-      <p style={{fontSize: '12px', backgroundColor: 'white', color: 'black'}}>
-        {JSON.stringify(first10Values)}
-      </p>
-}
+      {loading
+        ? (
+          <h1>Loading...</h1>
+        ) : (
+          <PokeTable
+            data={pokeData}
+          />
+        )}
     </>
   )
 }
 
-export default DataFetcher
+export default PokeTableContainer
