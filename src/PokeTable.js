@@ -56,8 +56,8 @@ const PokeTable = ({ data }) => {
     }
     else{
       let a = pokemon.sort(function(a, b){
-        if(a.name.toLowerCase() < b.name.toLowerCase()) { return 1 }
-        if(a.name.toLowerCase() > b.name.toLowerCase()) { return -1 }
+        if(a.order < b.order) { return 1 }
+        if(a.order > b.order) { return -1 }
         return 0
       })
       setPokemon(a)
